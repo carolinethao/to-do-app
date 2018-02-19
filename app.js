@@ -1,36 +1,64 @@
 function onReady() {
+  let toDos = [];
+  let id = 0;
   const addToDoForm = document.getElementById('addToDoForm');
-  const newToDoText = document.getElementById('newToDoText');
-  const toDoList = document.getElementById('toDoList');
 
-  addToDoForm.addEventListener('submit', event => {
-    event.preventDefault();
+  function createNewToDo() {
+    const newToDoText = document.getElementById('newToDoText');
+    if (!newToDoText.value) { return; }
 
-  // get the text
-  let title = newToDoText.value;
+    toDos.push({
+      title: newToDoText.value,
+      complete: false,
+      id: id++
+    });
 
-  // create a new li
-  let newLi = document.createElement('li');
+    newToDoText.value = '';
 
-  // create a new input
-  let checkbox = document.createElement('input');
+    renderTheUI();
+  }
 
-  // set the input's type to checkbox
-  checkbox.type = "checkbox";
+  function removeNewToDo(id){
+     return toDos.filter(toDo => toDo.id !== id);
+   }
 
-  // set the title
-  newLi.textContent = title;
+   addToDoForm.addEventListener('submit', event => {
+     event.preventDefault();
+     createNewToDo();
+     newToDoText.value = '';
+   });
 
-  // attach the checkbox to the li
-  newLi.appendChild(checkbox);
+  function renderTheUI() {
+    const toDoList = document.getElementById('toDoList');
 
-  // attach the li to the ul
-  toDoList.appendChild(newLi);
+    toDoList.textContent = '';
 
-  //empty the input
-  newToDoText.value = '';
+    toDos.forEach(function(toDo) {
+      const newToDo = document.createElement('li');
 
+      const checkbox = document.createElement('input');
+      checkbox.type = "checkbox";
+
+      const title = document.createElement('span');
+      title.textContent = toDo.title;
+
+      const button = document.createElement('button');
+      button.innerHTML = 'Delete';
+
+      toDoList.appendChild(newToDo);
+      newToDo.appendChild(checkbox);
+      newToDo.appendChild(title);
+      newToDo.appendChild(button);
+
+      button.addEventListener('click', () => {
+        toDos = removeNewToDo(toDo.id);
+
+        renderTheUI();
+    });
   });
+}
+
+  renderTheUI();
 }
 
 window.onload = function() {
